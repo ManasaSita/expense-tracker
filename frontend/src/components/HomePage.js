@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Home, PlusCircle, XCircle, Edit2, Trash2 } from 'lucide-react';
-import NewExpenseForm from './NewExpense';
+// import NewExpenseForm from './NewExpense';
 import EditExpenseForm from './EditExpense';
 import { Link, useHistory } from 'react-router-dom';
 
@@ -77,7 +77,7 @@ const HomePage = ({ expenses, fetchExpenses }) => {
         <PlusCircle className='align-svg-plus' onClick={showForm}/>
       </div>
       <h2>Balance: ₹{balance.toFixed(2)}</h2>
-      {form && <NewExpenseForm toggleForm={showForm} fetchExpenses={fetchExpenses}/>}
+      {/* {form && <NewExpenseForm toggleForm={showForm} fetchExpenses={fetchExpenses}/>} */}
       <h2>Expenses</h2>
       <ul className='expense-list'>
         {expenses.slice().reverse().map(expense => (
