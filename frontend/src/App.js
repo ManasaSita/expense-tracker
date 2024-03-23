@@ -128,6 +128,17 @@ function App() {
     setHide(!form);
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleSelect = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleOptionSelect = (option) => {
+    handleInputChange({ target: { name: 'type', value: option } });
+    setIsOpen(false); // Close the dropdown after selecting an option
+  };
+
   // $(".dropdown-menu li").click(function() {
   //   $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
   //   $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
@@ -163,12 +174,23 @@ function App() {
           </div>
           <div class="grid-container">
             <label for="type">Type:</label>
-            <select id="type" name="type" value={newExpense.type} onChange={handleInputChange}>
-              <option value="Debit">Debit</option>
-              <option value="Credit">Credit</option>
-            </select>
+            <div className="custom-select">
+              <div className={`select-selected ${isOpen ? 'select-arrow-active' : ''}`} onClick={toggleSelect}>
+                {newExpense.type}
+              </div>
+              <div className={`select-items ${isOpen ? '' : 'select-hide'}`}>
+                <div className="select-item" onClick={() => handleOptionSelect('Debit')}>
+                  Debit
+                </div>
+                <div className="select-item" onClick={() => handleOptionSelect('Credit')}>
+                  Credit
+                </div>
+              </div>
+            </div>
           </div>
-          <button className='submit-btn' type="submit">Add Expense</button>
+          <div class="grid-container">
+            <button className='submit-btn' type="submit">Add Expense</button>
+          </div>
         </div>
       </form>
       <h2>Expenses</h2>

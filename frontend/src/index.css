@@ -12,7 +12,7 @@
     display: none;
   } 
 
-  textarea:focus, input:focus{
+  textarea:focus, input:focus, select:focus{
     outline: none;
   }
 
@@ -22,7 +22,10 @@
     justify-content: space-around;
     background-color: cornflowerblue;
     align-items: center;
-    border-radius: inherit;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
   }
 
   form {
@@ -55,7 +58,7 @@
 
       .grid-container {
         display: grid;
-        grid-template-columns: auto auto;
+        /* grid-template-columns: auto auto; */
         gap: 10px;
         margin: 15px;
         font-size: 25px;
@@ -66,11 +69,104 @@
           border-radius: 8px;
           padding: 10px;
         }
+
+        .custom-select {
+          position: relative;
+          font-size: 18px;
+          width: 110px;
+          font-family: sans-serif;
+        }
+        
+        .custom-select select {
+          display: none; /*hide original SELECT element:*/
+        }
+        
+        .select-selected {
+          background-color: rgb(255, 255, 255);
+        }
+        
+        /*style the arrow inside the select element:*/
+        .select-selected:after {
+          position: absolute;
+          content: "";
+          top: 10px;
+          right: 10px;
+          width: 0;
+          height: 0;
+          border: 6px solid transparent;
+          border-color: black transparent transparent transparent;
+        }
+        
+        /*point the arrow upwards when the select box is open (active):*/
+        .select-selected.select-arrow-active:after {
+          border-color: transparent transparent black transparent; /* Change border color to cornflower blue */
+          top: 5px;
+        }
+        
+        /*style the items (options), including the selected item:*/
+        .select-items div,.select-selected {
+          color: black;
+          padding: 2px 16px;
+          border: 1px solid transparent;
+          border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+          cursor: pointer;
+          user-select: none;
+        }
+        
+        /*style items (options):*/
+        .select-items {
+          position: relative;
+          background-color: rgb(255, 255, 255);
+          top: 100%;
+          left: 0;
+          right: 0;
+          z-index: 99;
+        }
+        
+        /*hide the items when the select box is closed:*/
+        .select-hide {
+          display: none;
+        }
+        
+        .select-items div:hover, .same-as-selected {
+          background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .submit-btn {
+          display: flex;
+          flex-wrap: nowrap;
+          justify-content: center;
+          align-items: center;
+          margin: auto;
+          padding: 15px;
+          border: none;
+          background-color: #09bf2c6e;
+          border-radius: 10px;
+          font-size: 75%;
+          color: white;
+        }
       }
+
             
     }
   }
 
+  .expense-list {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+
+    li {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+      background-color: white;
+      margin: 10px;
+      padding: 10px;
+      border-radius: 15px;
+    }
+  }
 
 }
 
