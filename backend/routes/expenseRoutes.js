@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
     type: req.body.type
   });
     console.log("---------------------------------", req);
-    console.log("Router POST", JSON.stringify(expense));
+    // console.log("Router POST", JSON.stringify(expense));
   try {
     const newExpense = await expense.save();
     res.status(201).json(newExpense);
@@ -32,7 +32,9 @@ router.post('/', async (req, res) => {
 });
 
 // Update an expense
-router.put('/edit/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
+  console.log("----------------------");
+  console.log(req.body);
   const { title, amount, category, type } = req.body;
   const expenseId = req.params.id;
 

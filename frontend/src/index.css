@@ -17,18 +17,35 @@
   }
 
   .main-header{
-    display: flex;
+    display: grid;
     width: 100%;
-    justify-content: space-around;
+    grid-template-columns: auto auto auto;
     background-color: cornflowerblue;
     align-items: center;
     border-top-left-radius: inherit;
     border-top-right-radius: inherit;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
+    font-size: 25px;
+    justify-items: center;
   }
 
-  form {
+  .balance {
+    display: flex;
+    align-items: center;
+
+    p {
+      font-size: 20px;
+      color: #20702ba8;
+      font-family: sans-serif;
+    }
+  }
+
+  h2 {
+    margin: 10px;
+  }
+
+  form, .edit-form {
     display: flex;
     width: inherit;
     margin: 12px;
@@ -165,11 +182,177 @@
       margin: 10px;
       padding: 10px;
       border-radius: 15px;
+
+      .exp-title {
+        width: 40%;
+      }
+
+      .exp-amount, .exp-edit {
+        width: 20%;
+      }
+
+      .credit {
+        color: #2f8c2fc9;
+      }
+      
+      .debit {
+        color: #f31f1fbd;
+      }
+      
     }
   }
 
 }
 
-.hidden {
-  display: none;
+
+/* *******************************    Edit-Modal    ************************** */
+.ReactModalPortal {
+  .ReactModal__Overlay,  .ReactModal__Overlay--after-open {
+    background-color: rgb(3 3 5 / 51%) !important;
+
+    .edit-modal:focus {
+      outline: none;
+    }
+
+    .edit-modal {
+      display: flex;
+      background-color: lavender;
+      width: 80%;
+      height: max-content;
+      align-items: center;
+      justify-content: center;
+      top: 10%;
+      left: 8%;
+      position: absolute;
+      flex-direction: column;
+      border-radius: 15px;
+
+      textarea:focus, input:focus, select:focus{
+        outline: none;
+      }
+
+      form {
+        display: flex;
+        margin: 12px;
+        background-color: lavender;
+        padding: 15px;
+        border-radius: inherit;
+        width: 90%;
+
+        .main-edit-form {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+
+          .edit-expense-title {
+            display: flex;
+
+            .edit-title {
+              width: 50%;
+              margin-bottom: 25px;
+            }
+
+            .close-form {
+              display: flex;
+              width: 50%;
+              flex-direction: row-reverse;      
+            }
+          }
+
+          .grid-container {
+            display: grid;
+            /* grid-template-columns: auto auto; */
+            gap: 10px;
+            margin: 15px;
+            font-size: 20px;
+            align-items: center;
+
+            input {
+              border: white 1px solid;
+              border-radius: 8px;
+              padding: 10px;
+            }
+
+            .custom-select {
+              position: relative;
+              font-size: 18px;
+              width: 110px;
+              font-family: sans-serif;
+            }
+            
+            .custom-select select {
+              display: none; /*hide original SELECT element:*/
+            }
+            
+            .select-selected {
+              background-color: rgb(255, 255, 255);
+            }
+            
+            /*style the arrow inside the select element:*/
+            .select-selected:after {
+              position: absolute;
+              content: "";
+              top: 10px;
+              right: 10px;
+              width: 0;
+              height: 0;
+              border: 6px solid transparent;
+              border-color: black transparent transparent transparent;
+            }
+            
+            /*point the arrow upwards when the select box is open (active):*/
+            .select-selected.select-arrow-active:after {
+              border-color: transparent transparent black transparent; /* Change border color to cornflower blue */
+              top: 5px;
+            }
+            
+            /*style the items (options), including the selected item:*/
+            .select-items div,.select-selected {
+              color: black;
+              padding: 2px 16px;
+              border: 1px solid transparent;
+              border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+              cursor: pointer;
+              user-select: none;
+            }
+            
+            /*style items (options):*/
+            .select-items {
+              position: relative;
+              background-color: rgb(255, 255, 255);
+              top: 100%;
+              left: 0;
+              right: 0;
+              z-index: 99;
+            }
+            
+            /*hide the items when the select box is closed:*/
+            .select-hide {
+              display: none;
+            }
+            
+            .select-items div:hover, .same-as-selected {
+              background-color: rgba(0, 0, 0, 0.1);
+            }
+
+            .submit-btn {
+              display: flex;
+              flex-wrap: nowrap;
+              justify-content: center;
+              align-items: center;
+              margin: auto;
+              padding: 15px;
+              border: none;
+              background-color: #09bf2c6e;
+              border-radius: 10px;
+              font-size: 75%;
+              color: white;
+            }
+          }
+
+                
+        }
+      }
+    }
+  }
 }
