@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Home, PlusCircle, XCircle, Edit2, Trash2 } from 'lucide-react';
+import Modal from 'react-modal';
 import './App.css';
 
 function App() {
@@ -30,8 +31,6 @@ function App() {
     }
   };
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewExpense(prevState => ({
@@ -51,49 +50,71 @@ function App() {
     }
   };
 
-  const handleDropdownItemClick = (value) => {
-    setNewExpense(prevState => ({
-      ...prevState,
-      type: value
-    }));
-    setDropdownOpen(false); // Close the dropdown
-  };
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [editId, setEditId] = useState();
+  const [newValues, setNewValues] = useState({
+    newTitle: '',
+    newAmount: 0,
+    newCategory: '',
+    newType: ''
+  });
+
   const handleEdit = async (id) => {
     // Fetch the expense to be edited
-    console.log("handleEdit ----------");
-    console.log("id: ",id);
     const expenseToEdit = expenses.find(expense => expense._id === id);
-    console.log("expenseToEdit: ", expenseToEdit);
+    console.log(expenseToEdit);
     if (!expenseToEdit) {
       console.error('Expense not found');
       return;
     }
-  
-    // Ask user for new values
-    const newTitle = prompt('Enter new title', expenseToEdit.title);
-    const newAmount = parseFloat(prompt('Enter new amount', expenseToEdit.amount));
-    const newCategory = prompt('Enter new category', expenseToEdit.category);
-    const newType = prompt('Enter new type (Debit or Credit)', expenseToEdit.type);
-  
+    setEditId(id);
+    setNewValues({
+      newTitle: expenseToEdit.title,
+      newAmount: expenseToEdit.amount,
+      newCategory: expenseToEdit.category,
+      newType: expenseToEdit.type
+    });
+    openModal();
+  };
+
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
+  const handleEditInputChange = (event) => {
+    const { name, value } = event.target;
+    setNewValues({
+      ...newValues,
+      [name]: value
+    });
+  };
+
+  const handleEditSubmit = async () => {
     // Prepare updated expense data
+    const id = editId;
+    const expenseToEdit = expenses.find(expense => expense._id === id);
     const updatedExpense = {
       ...expenseToEdit,
-      title: newTitle,
-      amount: newAmount,
-      category: newCategory,
-      type: newType
+      title: newValues.newTitle,
+      amount: parseFloat(newValues.newAmount),
+      category: newValues.newCategory,
+      type: newValues.newType
     };
-    console.log("updatedExpense: ", updatedExpense);
-  
+
     // Make API call to update expense
     try {
       await axios.put(`http://localhost:5000/api/expenses/${id}`, updatedExpense);
+      console.log("Updated-----");
       fetchExpenses(); // Refresh the expense list after editing
+      closeModal();
     } catch (error) {
       console.error('Error editing expense:', error);
     }
-  };
-  
+  };  
   
   const handleDelete = async (id) => {
     try {
@@ -114,14 +135,6 @@ function App() {
     setBalance(totalCredit - totalDebit);
   };
 
-  const getExpenseType = async (type) => {
-    // if (type == 'Debit') {
-    //   const amountDiv = document.getElementById('expAmount');
-    //   amountDiv.classList.remove('green-font'); // Remove 'green-font' class
-    //   amountDiv.classList.add('red-font'); // Add 'red-font' class
-    // }
-  };
-
   const [form, setHide] = useState(true);
 
   const showForm = () => {
@@ -136,26 +149,26 @@ function App() {
 
   const handleOptionSelect = (option) => {
     handleInputChange({ target: { name: 'type', value: option } });
+    handleEditInputChange( { target: {name: 'newType', value: option}});
     setIsOpen(false); // Close the dropdown after selecting an option
   };
 
-  // $(".dropdown-menu li").click(function() {
-  //   $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
-  //   $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
-  // });
 
   return (
     <div className='main'>
       <div className='main-header'>
         <Home className='align-svg-home'/>
         <p>Expense Tracker</p>
-        <PlusCircle className='align-svg-plus' onClick={showForm}/>
+        <PlusCircle className='align-svg-plus' onClick={showForm} alt='Add a new transaction'/>
       </div>
-      <h2>Balance: ₹{balance.toFixed(2)}</h2>
+      <div className='balance'>
+        <h2>Balance: </h2> 
+        <p> ₹ {balance.toFixed(2)}</p>
+      </div>
       <form id='inputForm' className={form ? 'hidden' : ''} onSubmit={handleSubmit}>
         <div className="main-form">
           <div className='add-expense-title'>
-            <h3 className='add-new-title'>Add a new expense</h3>
+            <h3 className='add-new-title'>Add a new transaction</h3>
             <div className='close-form'>
               <XCircle onClick={showForm}/>
             </div>
@@ -165,7 +178,7 @@ function App() {
             <input type="text" id="title" name="title" value={newExpense.title} onChange={handleInputChange} required placeholder='Ex: Salary'/>
           </div>
           <div class="grid-container">
-            <label for="amount">Amount:</label>
+            <label for="amount">Amount: (in ₹ )</label>
             <input id='amount' type="number" name="amount" value={newExpense.amount} onChange={handleInputChange} required placeholder='Ex: 100000'/>
           </div>
           <div class="grid-container">
@@ -189,30 +202,73 @@ function App() {
             </div>
           </div>
           <div class="grid-container">
-            <button className='submit-btn' type="submit">Add Expense</button>
+            <button className='submit-btn' type="submit">Add Transaction</button>
           </div>
         </div>
       </form>
-      <h2>Expenses</h2>
+      <h2>Transactions: </h2>
       <ul className='expense-list'>
         {expenses.slice().reverse().map(expense => (
           <li key={expense._id}>
-            <div>
+            <div className='exp-title'>
               {expense.title}
             </div>
-            <div id='expAmount' className='green-font'>
+            <div id='expAmount' className={`exp-amount ${expense.type === 'Credit' ? 'credit' : 'debit'}`}>
               ₹ {expense.amount}
             </div>
-            <div>
+            <div className='exp-edit'>
               <Edit2 onClick={() => handleEdit(expense._id)}/>
             </div>
-            <div>
+            <div className='exp-delete'>
               <Trash2 onClick={() => handleDelete(expense._id)}/>
             </div>
              {/* - ₹ - {expense.category} - {expense.type}  onLoad={getExpenseType(expense.type)}*/}
           </li>
         ))}
       </ul>
+      <Modal className='edit-modal' isOpen={modalIsOpen} onRequestClose={closeModal} ariaHideApp={false}>
+        <form  onSubmit={handleEditSubmit}>
+        <div className="main-edit-form">
+          <div className='edit-expense-title'>
+            <h2 className='edit-title'>Edit Transaction</h2>
+            <div className='close-form'>
+              <XCircle onClick={closeModal}/>
+            </div>
+          </div>
+          <div class="grid-container">
+            <label for="title">Title:</label>
+            <input type="text" name="newTitle" value={newValues.newTitle} onChange={handleEditInputChange} required/>
+          </div>
+          <div class="grid-container">
+            <label for="amount">Amount: (in ₹ )</label>
+            <input  type="number" name="newAmount" value={newValues.newAmount} onChange={handleEditInputChange} required/>
+          </div>
+          <div class="grid-container">
+            <label for="category">Category:</label>
+            <input type="text" name="newCategory" value={newValues.newCategory} onChange={handleEditInputChange} required/>
+          </div>
+          <div class="grid-container">
+            <label for="type">Type:</label>
+            <div className="custom-select">
+              <div className={`select-selected ${isOpen ? 'select-arrow-active' : ''}`} onClick={toggleSelect}>
+                {newValues.newType}
+              </div>
+              <div className={`select-items ${isOpen ? '' : 'select-hide'}`}>
+                <div className="select-item" onClick={() => handleOptionSelect('Debit')}>
+                  Debit
+                </div>
+                <div className="select-item" onClick={() => handleOptionSelect('Credit')}>
+                  Credit
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="grid-container">
+            <button className='submit-btn' type="submit">Add Transaction</button>
+          </div>
+        </div>
+        </form>
+      </Modal>
     </div>
   );
 }
